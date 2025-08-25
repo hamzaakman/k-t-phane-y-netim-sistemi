@@ -46,4 +46,23 @@ try {
 } catch(PDOException $e) {
     echo "Tablo oluşturma hatası: " . $e->getMessage();
 }
+
+// Üyeler tablosunu oluştur (eğer yoksa)
+$uyelerSql = "CREATE TABLE IF NOT EXISTS uyeler (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    ad_soyad VARCHAR(255) NOT NULL,
+    telefon VARCHAR(20),
+    eposta VARCHAR(255),
+    uyelik_tarihi DATE NOT NULL,
+    dogum_tarihi DATE,
+    adres TEXT,
+    uyelik_durumu ENUM('Aktif', 'Pasif') DEFAULT 'Aktif',
+    kayit_tarihi TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)";
+
+try {
+    $conn->exec($uyelerSql);
+} catch(PDOException $e) {
+    echo "Üyeler tablosu oluşturma hatası: " . $e->getMessage();
+}
 ?>

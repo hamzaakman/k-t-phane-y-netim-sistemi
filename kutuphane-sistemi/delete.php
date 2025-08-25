@@ -62,6 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['confirm_delete'])) {
                 <a href="index.php">Ana Sayfa</a>
                 <a href="add.php">Kitap Ekle</a>
                 <a href="status-update.php">Durum Güncelle</a>
+                <a href="members.php">Üye Yönetimi</a>
             </nav>
         </header>
 

@@ -61,6 +61,7 @@ $kategoriler = $kategoriStmt->fetchAll(PDO::FETCH_COLUMN);
                 <a href="index.php">Ana Sayfa</a>
                 <a href="add.php" class="active">Kitap Ekle</a>
                 <a href="status-update.php">Durum Güncelle</a>
+                <a href="members.php">Üye Yönetimi</a>
             </nav>
         </header>
 
