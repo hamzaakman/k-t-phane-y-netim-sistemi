@@ -7,11 +7,13 @@ $kategori = isset($_GET['kategori']) ? $_GET['kategori'] : '';
 $durum = isset($_GET['durum']) ? $_GET['durum'] : '';
 
 // SQL sorgusu oluştur
-$sql = "SELECT * FROM kitaplar WHERE 1=1";
+$sql = "SELECT k.*, u.ad_soyad as uye_adi FROM kitaplar k 
+        LEFT JOIN uyeler u ON k.odunc_verilen_uye_id = u.id 
+        WHERE 1=1";
 $params = array();
 
 if (!empty($search)) {
-    $sql .= " AND (kitap_adi LIKE ? OR yazar LIKE ? OR isbn LIKE ?)";
+    $sql .= " AND (k.kitap_adi LIKE ? OR k.yazar LIKE ? OR k.isbn LIKE ?)";
     $searchTerm = "%$search%";
     $params[] = $searchTerm;
     $params[] = $searchTerm;
@@ -19,23 +21,23 @@ if (!empty($search)) {
 }
 
 if (!empty($kategori)) {
-    $sql .= " AND kategori = ?";
+    $sql .= " AND k.kategori = ?";
     $params[] = $kategori;
 }
 
 if (!empty($durum)) {
-    $sql .= " AND durum = ?";
+    $sql .= " AND k.durum = ?";
     $params[] = $durum;
 }
 
-$sql .= " ORDER BY kitap_adi ASC";
+$sql .= " ORDER BY k.kitap_adi ASC";
 
 $stmt = $conn->prepare($sql);
 $stmt->execute($params);
 $kitaplar = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Kategorileri al
-$kategoriStmt = $conn->query("SELECT DISTINCT kategori FROM kitaplar WHERE kategori IS NOT NULL AND kategori != '' ORDER BY kategori");
+$kategoriStmt = $conn->query("SELECT DISTINCT k.kategori FROM kitaplar k WHERE k.kategori IS NOT NULL AND k.kategori != '' ORDER BY k.kategori");
 $kategoriler = $kategoriStmt->fetchAll(PDO::FETCH_COLUMN);
 ?>
 
@@ -193,6 +195,10 @@ $kategoriler = $kategoriStmt->fetchAll(PDO::FETCH_COLUMN);
                                 
                                 <?php if ($kitap['durum'] == 'Ödünç' && !empty($kitap['son_teslim_tarihi'])): ?>
                                     <p><strong>Son Teslim:</strong> <?php echo date('d.m.Y', strtotime($kitap['son_teslim_tarihi'])); ?></p>
+                                <?php endif; ?>
+                                
+                                <?php if ($kitap['durum'] == 'Ödünç' && !empty($kitap['uye_adi'])): ?>
+                                    <p><strong>👤 Ödünç Alan:</strong> <?php echo htmlspecialchars($kitap['uye_adi']); ?></p>
                                 <?php endif; ?>
                                 
                                 <p><strong>Eklenme:</strong> <?php echo date('d.m.Y', strtotime($kitap['eklenme_tarihi'])); ?></p>

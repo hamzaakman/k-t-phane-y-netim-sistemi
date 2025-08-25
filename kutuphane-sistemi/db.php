@@ -35,12 +35,19 @@ try {
     // Mevcut tabloya yeni sütunları ekle (eğer yoksa)
     $alterSql1 = "ALTER TABLE kitaplar ADD COLUMN IF NOT EXISTS odunc_tarihi DATE NULL";
     $alterSql2 = "ALTER TABLE kitaplar ADD COLUMN IF NOT EXISTS son_teslim_tarihi DATE NULL";
+    $alterSql3 = "ALTER TABLE kitaplar ADD COLUMN IF NOT EXISTS odunc_verilen_uye_id INT(11) NULL";
     
     try {
         $conn->exec($alterSql1);
         $conn->exec($alterSql2);
+        $conn->exec($alterSql3);
+        
+        // Foreign key constraint ekle (eğer yoksa)
+        $conn->exec("ALTER TABLE kitaplar ADD CONSTRAINT fk_odunc_uye 
+                     FOREIGN KEY (odunc_verilen_uye_id) REFERENCES uyeler(id) 
+                     ON DELETE SET NULL ON UPDATE CASCADE");
     } catch(PDOException $e) {
-        // Sütun zaten varsa hata vermez
+        // Sütun zaten varsa veya constraint varsa hata vermez
     }
     
 } catch(PDOException $e) {

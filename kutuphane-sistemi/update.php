@@ -39,25 +39,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $durum = $_POST['durum'];
     $odunc_tarihi = $_POST['odunc_tarihi'] ?? null;
     $son_teslim_tarihi = $_POST['son_teslim_tarihi'] ?? null;
+    $odunc_verilen_uye_id = $_POST['odunc_verilen_uye_id'] ?? null;
     
     // Basit doğrulama
     if (empty($kitap_adi) || empty($yazar)) {
         $message = 'Kitap adı ve yazar alanları zorunludur!';
         $messageType = 'error';
-    } elseif ($durum == 'Ödünç' && (empty($odunc_tarihi) || empty($son_teslim_tarihi))) {
-        $message = 'Ödünç kitaplar için ödünç tarihi ve son teslim tarihi zorunludur!';
+    } elseif ($durum == 'Ödünç' && (empty($odunc_tarihi) || empty($son_teslim_tarihi) || empty($odunc_verilen_uye_id))) {
+        $message = 'Ödünç kitaplar için ödünç tarihi, son teslim tarihi ve üye seçimi zorunludur!';
         $messageType = 'error';
     } else {
         try {
-            // Ödünç durumu değilse tarihleri null yap
+            // Ödünç durumu değilse tarihleri ve üye ID'sini null yap
             if ($durum != 'Ödünç') {
                 $odunc_tarihi = null;
                 $son_teslim_tarihi = null;
+                $odunc_verilen_uye_id = null;
             }
             
-            $sql = "UPDATE kitaplar SET kitap_adi = ?, yazar = ?, yayin_evi = ?, yayin_yili = ?, isbn = ?, kategori = ?, durum = ?, odunc_tarihi = ?, son_teslim_tarihi = ? WHERE id = ?";
+            $sql = "UPDATE kitaplar SET kitap_adi = ?, yazar = ?, yayin_evi = ?, yayin_yili = ?, isbn = ?, kategori = ?, durum = ?, odunc_tarihi = ?, son_teslim_tarihi = ?, odunc_verilen_uye_id = ? WHERE id = ?";
             $stmt = $conn->prepare($sql);
-            $stmt->execute([$kitap_adi, $yazar, $yayin_evi, $yayin_yili, $isbn, $kategori, $durum, $odunc_tarihi, $son_teslim_tarihi, $id]);
+            $stmt->execute([$kitap_adi, $yazar, $yayin_evi, $yayin_yili, $isbn, $kategori, $durum, $odunc_tarihi, $son_teslim_tarihi, $odunc_verilen_uye_id, $id]);
             
             $message = 'Kitap başarıyla güncellendi!';
             $messageType = 'success';
@@ -72,6 +74,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 }
+
+// Aktif üyeleri al
+$uyelerStmt = $conn->query("SELECT id, ad_soyad FROM uyeler WHERE uyelik_durumu = 'Aktif' ORDER BY ad_soyad");
+$uyeler = $uyelerStmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -173,8 +179,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             </div>
                         </div>
                         
+                        <div class="form-group">
+                            <label for="odunc_verilen_uye_id">Ödünç Verilen Üye *</label>
+                            <select name="odunc_verilen_uye_id" id="odunc_verilen_uye_id" required>
+                                <option value="">Üye Seçin</option>
+                                <?php foreach ($uyeler as $uye): ?>
+                                    <option value="<?php echo $uye['id']; ?>" 
+                                        <?php echo (!empty($kitap['odunc_verilen_uye_id']) && $kitap['odunc_verilen_uye_id'] == $uye['id']) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($uye['ad_soyad']); ?> (<?php echo str_pad($uye['id'], 6, '0', STR_PAD_LEFT); ?>)
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        
                         <div class="date-info">
-                            <p>💡 <strong>İpucu:</strong> Kitabı ödünç verirken bu tarihleri doldurun. Varsayılan olarak bugün + 14 gün teslim tarihi ayarlanır.</p>
+                            <p>💡 <strong>İpucu:</strong> Kitabı ödünç verirken bu tarihleri doldurun ve hangi üyeye verdiğinizi seçin.</p>
                         </div>
                     </div>
 
@@ -203,11 +222,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             const dateFields = document.getElementById('date-fields');
             const oduncTarihi = document.getElementById('odunc_tarihi');
             const sonTeslimTarihi = document.getElementById('son_teslim_tarihi');
+            const uyeSelect = document.getElementById('odunc_verilen_uye_id');
             
             if (durumSelect.value === 'Ödünç') {
                 dateFields.style.display = 'block';
                 oduncTarihi.required = true;
                 sonTeslimTarihi.required = true;
+                uyeSelect.required = true;
                 
                 // Eğer tarihler boşsa varsayılan değerleri ayarla
                 if (!oduncTarihi.value) {
@@ -222,6 +243,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 dateFields.style.display = 'none';
                 oduncTarihi.required = false;
                 sonTeslimTarihi.required = false;
+                uyeSelect.required = false;
+                uyeSelect.value = '';
             }
         }
 

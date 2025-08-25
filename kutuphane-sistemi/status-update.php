@@ -4,8 +4,10 @@ require_once 'db.php';
 $message = '';
 $messageType = '';
 
-// Sadece ödünç kitapları getir
-$sql = "SELECT * FROM kitaplar WHERE durum = 'Ödünç' ORDER BY kitap_adi ASC";
+// Sadece ödünç kitapları üye bilgileriyle birlikte getir
+$sql = "SELECT k.*, u.ad_soyad as uye_adi FROM kitaplar k 
+        LEFT JOIN uyeler u ON k.odunc_verilen_uye_id = u.id 
+        WHERE k.durum = 'Ödünç' ORDER BY k.kitap_adi ASC";
 $stmt = $conn->prepare($sql);
 $stmt->execute();
 $odunc_kitaplar = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -28,7 +30,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $messageType = 'success';
             
             // Listeyi yenile
-            $stmt = $conn->prepare("SELECT * FROM kitaplar WHERE durum = 'Ödünç' ORDER BY kitap_adi ASC");
+            $stmt = $conn->prepare("SELECT k.*, u.ad_soyad as uye_adi FROM kitaplar k 
+                                   LEFT JOIN uyeler u ON k.odunc_verilen_uye_id = u.id 
+                                   WHERE k.durum = 'Ödünç' ORDER BY k.kitap_adi ASC");
             $stmt->execute();
             $odunc_kitaplar = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch(PDOException $e) {
@@ -157,6 +161,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                         }
                                     }
                                     ?>
+                                <?php endif; ?>
+                                
+                                <?php if (!empty($kitap['uye_adi'])): ?>
+                                    <p><strong>👤 Ödünç Alan:</strong> <?php echo htmlspecialchars($kitap['uye_adi']); ?></p>
                                 <?php endif; ?>
                                 
                                 <p><strong>Ödünç Verilme:</strong> <?php echo date('d.m.Y H:i', strtotime($kitap['eklenme_tarihi'])); ?></p>

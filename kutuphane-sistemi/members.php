@@ -13,12 +13,16 @@ if (isset($_GET['deleted']) && $_GET['deleted'] == '1') {
     $messageType = 'success';
 }
 
-// Üyeleri getir
-$sql = "SELECT * FROM uyeler WHERE 1=1";
+// Üyeleri ödünç kitap sayılarıyla birlikte getir
+$sql = "SELECT u.*, 
+        COUNT(k.id) as odunc_kitap_sayisi 
+        FROM uyeler u 
+        LEFT JOIN kitaplar k ON u.id = k.odunc_verilen_uye_id AND k.durum = 'Ödünç'
+        WHERE 1=1";
 $params = [];
 
 if (!empty($search)) {
-    $sql .= " AND (ad_soyad LIKE ? OR eposta LIKE ? OR telefon LIKE ?)";
+    $sql .= " AND (u.ad_soyad LIKE ? OR u.eposta LIKE ? OR u.telefon LIKE ?)";
     $searchParam = "%$search%";
     $params[] = $searchParam;
     $params[] = $searchParam;
@@ -26,11 +30,11 @@ if (!empty($search)) {
 }
 
 if (!empty($durum_filter)) {
-    $sql .= " AND uyelik_durumu = ?";
+    $sql .= " AND u.uyelik_durumu = ?";
     $params[] = $durum_filter;
 }
 
-$sql .= " ORDER BY ad_soyad ASC";
+$sql .= " GROUP BY u.id ORDER BY u.ad_soyad ASC";
 
 $stmt = $conn->prepare($sql);
 $stmt->execute($params);
@@ -134,9 +138,11 @@ $stats = $stats_stmt->fetch(PDO::FETCH_ASSOC);
                                 <p><strong>🏠 Adres:</strong> <?php echo htmlspecialchars($uye['adres']); ?></p>
                             <?php endif; ?>
                             <p><strong>🆔 Üye No:</strong> <?php echo str_pad($uye['id'], 6, '0', STR_PAD_LEFT); ?></p>
+                            <p><strong>📚 Ödünç Kitap:</strong> <?php echo $uye['odunc_kitap_sayisi']; ?> adet</p>
                             <p><strong>📋 Kayıt:</strong> <?php echo date('d.m.Y', strtotime($uye['kayit_tarihi'])); ?></p>
                         </div>
                         <div class="member-actions">
+                            <a href="member-books.php?id=<?php echo $uye['id']; ?>" class="btn-primary">📚 Kitapları Gör</a>
                             <a href="update-member.php?id=<?php echo $uye['id']; ?>" class="btn-edit">✏️ Düzenle</a>
                             <a href="delete-member.php?id=<?php echo $uye['id']; ?>" class="btn-delete" onclick="return confirm('Bu üyeyi silmek istediğinizden emin misiniz?')">🗑️ Sil</a>
                         </div>
