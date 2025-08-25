@@ -86,7 +86,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <div class="book-card">
                             <div class="book-header">
                                 <h3><?php echo htmlspecialchars($kitap['kitap_adi']); ?></h3>
-                                <span class="status status-ödünç">
+                                <?php
+                                $extraClass = '';
+                                
+                                // Ödünç kitaplar için tarih kontrolü
+                                if (!empty($kitap['son_teslim_tarihi'])) {
+                                    $bugun = new DateTime();
+                                    $sonTeslim = new DateTime($kitap['son_teslim_tarihi']);
+                                    $fark = $bugun->diff($sonTeslim);
+                                    
+                                    if ($bugun > $sonTeslim) {
+                                        $extraClass = 'gecmis';
+                                    } elseif ($fark->days <= 3) {
+                                        $extraClass = 'yakin';
+                                    } else {
+                                        $extraClass = 'uzak';
+                                    }
+                                }
+                                ?>
+                                <span class="status status-ödünç <?php echo $extraClass; ?>">
                                     📤 Ödünç
                                 </span>
                             </div>
@@ -104,6 +122,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <?php if (!empty($kitap['kategori'])): ?>
                                     <p><strong>Kategori:</strong> <?php echo htmlspecialchars($kitap['kategori']); ?></p>
                                 <?php endif; ?>
+                                <?php if (!empty($kitap['odunc_tarihi'])): ?>
+                                    <p><strong>Ödünç Tarihi:</strong> <?php echo date('d.m.Y', strtotime($kitap['odunc_tarihi'])); ?></p>
+                                <?php endif; ?>
+                                
+                                <?php if (!empty($kitap['son_teslim_tarihi'])): ?>
+                                    <p><strong>Son Teslim:</strong> <?php echo date('d.m.Y', strtotime($kitap['son_teslim_tarihi'])); ?></p>
+                                    <?php
+                                    $bugun = new DateTime();
+                                    $sonTeslim = new DateTime($kitap['son_teslim_tarihi']);
+                                    $fark = $bugun->diff($sonTeslim);
+                                    
+                                    if ($bugun > $sonTeslim) {
+                                        echo '<p style="color: #e53e3e; font-weight: bold;">⚠️ ' . $fark->days . ' gün gecikme!</p>';
+                                    } elseif ($fark->days <= 3) {
+                                        echo '<p style="color: #fbb040; font-weight: bold;">⏰ ' . $fark->days . ' gün kaldı</p>';
+                                    } else {
+                                        echo '<p style="color: #38a169; font-weight: bold;">✅ ' . $fark->days . ' gün kaldı</p>';
+                                    }
+                                    ?>
+                                <?php endif; ?>
+                                
                                 <p><strong>Ödünç Verilme:</strong> <?php echo date('d.m.Y H:i', strtotime($kitap['eklenme_tarihi'])); ?></p>
                             </div>
                             <form method="POST" action="" class="status-form">

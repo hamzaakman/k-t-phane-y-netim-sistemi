@@ -24,11 +24,25 @@ $sql = "CREATE TABLE IF NOT EXISTS kitaplar (
     isbn VARCHAR(13),
     kategori VARCHAR(100),
     durum ENUM('Mevcut', 'Ödünç', 'Kayıp') DEFAULT 'Mevcut',
+    odunc_tarihi DATE NULL,
+    son_teslim_tarihi DATE NULL,
     eklenme_tarihi TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )";
 
 try {
     $conn->exec($sql);
+    
+    // Mevcut tabloya yeni sütunları ekle (eğer yoksa)
+    $alterSql1 = "ALTER TABLE kitaplar ADD COLUMN IF NOT EXISTS odunc_tarihi DATE NULL";
+    $alterSql2 = "ALTER TABLE kitaplar ADD COLUMN IF NOT EXISTS son_teslim_tarihi DATE NULL";
+    
+    try {
+        $conn->exec($alterSql1);
+        $conn->exec($alterSql2);
+    } catch(PDOException $e) {
+        // Sütun zaten varsa hata vermez
+    }
+    
 } catch(PDOException $e) {
     echo "Tablo oluşturma hatası: " . $e->getMessage();
 }

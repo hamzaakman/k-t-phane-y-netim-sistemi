@@ -274,6 +274,59 @@ nav a:hover, nav a.active {
     border: 1px solid rgba(237, 137, 54, 0.6);
 }
 
+/* Ödünç kitaplar için tarih tabanlı renk kodlaması */
+.status-ödünç.gecmis {
+    background: linear-gradient(135deg, #e53e3e, #c53030) !important;
+    border: 2px solid #fc8181 !important;
+    box-shadow: 0 2px 8px rgba(229, 62, 62, 0.6) !important;
+    animation: pulse-red 2s infinite;
+}
+
+.status-ödünç.yakin {
+    background: linear-gradient(135deg, #fbb040, #ed8936) !important;
+    border: 2px solid #ffd700 !important;
+    box-shadow: 0 2px 8px rgba(251, 176, 64, 0.6) !important;
+    animation: pulse-yellow 2s infinite;
+}
+
+.status-ödünç.uzak {
+    background: linear-gradient(135deg, #38a169, #2f855a) !important;
+    border: 2px solid #68d391 !important;
+    box-shadow: 0 2px 8px rgba(56, 161, 105, 0.6) !important;
+    animation: pulse-green 2s infinite;
+}
+
+/* Animasyonlar */
+@keyframes pulse-red {
+    0%, 100% { 
+        box-shadow: 0 2px 8px rgba(229, 62, 62, 0.6);
+    }
+    50% { 
+        box-shadow: 0 4px 16px rgba(229, 62, 62, 0.8);
+        transform: translateY(-1px);
+    }
+}
+
+@keyframes pulse-yellow {
+    0%, 100% { 
+        box-shadow: 0 2px 8px rgba(251, 176, 64, 0.6);
+    }
+    50% { 
+        box-shadow: 0 4px 16px rgba(251, 176, 64, 0.8);
+        transform: translateY(-1px);
+    }
+}
+
+@keyframes pulse-green {
+    0%, 100% { 
+        box-shadow: 0 2px 8px rgba(56, 161, 105, 0.6);
+    }
+    50% { 
+        box-shadow: 0 4px 16px rgba(56, 161, 105, 0.8);
+        transform: translateY(-1px);
+    }
+}
+
 .book-info p {
     margin-bottom: 8px;
     color: #4a5568;
@@ -494,6 +547,41 @@ nav a:hover, nav a.active {
     font-size: 1.2rem;
     color: #718096;
     margin-bottom: 20px;
+}
+
+/* Tarih alanları için stil */
+.date-fields {
+    background: linear-gradient(135deg, #f7fafc, #edf2f7);
+    padding: 20px;
+    border-radius: 15px;
+    margin-top: 15px;
+    border: 2px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.date-fields:hover {
+    border-color: #667eea;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+}
+
+.date-fields label {
+    color: #2d3748;
+    font-weight: 600;
+}
+
+.date-fields input[type="date"] {
+    padding: 12px 15px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.date-fields input[type="date"]:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 /* Durum güncelleme sayfası */

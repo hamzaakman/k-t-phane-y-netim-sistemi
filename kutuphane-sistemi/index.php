@@ -114,16 +114,52 @@ $kategoriler = $kategoriStmt->fetchAll(PDO::FETCH_COLUMN);
                         <div class="book-card">
                             <div class="book-header">
                                 <h3><?php echo htmlspecialchars($kitap['kitap_adi']); ?></h3>
-                                <span class="status status-<?php echo strtolower($kitap['durum']); ?>">
-                                    <?php 
-                                    $durum_icons = [
-                                        'Mevcut' => '✅ Mevcut',
-                                        'Ödünç' => '📤 Ödünç', 
-                                        'Kayıp' => '❌ Kayıp'
-                                    ];
-                                    echo $durum_icons[$kitap['durum']] ?? $kitap['durum']; 
-                                    ?>
-                                </span>
+                                                        <?php
+                        $durumClass = strtolower($kitap['durum']);
+                        $extraClass = '';
+                        
+                        // Ödünç kitaplar için tarih kontrolü
+                        if ($kitap['durum'] == 'Ödünç' && !empty($kitap['son_teslim_tarihi'])) {
+                            $bugun = new DateTime();
+                            $sonTeslim = new DateTime($kitap['son_teslim_tarihi']);
+                            $fark = $bugun->diff($sonTeslim);
+                            $gunFarki = $fark->days;
+                            
+                            if ($bugun > $sonTeslim) {
+                                // Teslim tarihi geçmiş - KIRMIZI
+                                $extraClass = 'gecmis';
+                            } elseif ($gunFarki <= 3) {
+                                // 3 gün veya daha az kalmış - SARI
+                                $extraClass = 'yakin';
+                            } else {
+                                // 3 günden fazla var - YEŞİL
+                                $extraClass = 'uzak';
+                            }
+                        }
+                        ?>
+                        <span class="status status-<?php echo $durumClass; ?> <?php echo $extraClass; ?>">
+                            <?php
+                            $durum_icons = [
+                                'Mevcut' => '✅ Mevcut',
+                                'Ödünç' => '📤 Ödünç',
+                                'Kayıp' => '❌ Kayıp'
+                            ];
+                            echo $durum_icons[$kitap['durum']] ?? $kitap['durum'];
+                            
+                            // Ödünç kitaplar için tarih bilgisi
+                            if ($kitap['durum'] == 'Ödünç' && !empty($kitap['son_teslim_tarihi'])) {
+                                $bugun = new DateTime();
+                                $sonTeslim = new DateTime($kitap['son_teslim_tarihi']);
+                                $fark = $bugun->diff($sonTeslim);
+                                
+                                if ($bugun > $sonTeslim) {
+                                    echo ' (' . $fark->days . ' gün gecikme)';
+                                } else {
+                                    echo ' (' . $fark->days . ' gün kaldı)';
+                                }
+                            }
+                            ?>
+                        </span>
                             </div>
                             <div class="book-info">
                                 <p><strong>Yazar:</strong> <?php echo htmlspecialchars($kitap['yazar']); ?></p>
@@ -139,6 +175,15 @@ $kategoriler = $kategoriStmt->fetchAll(PDO::FETCH_COLUMN);
                                 <?php if (!empty($kitap['kategori'])): ?>
                                     <p><strong>Kategori:</strong> <?php echo htmlspecialchars($kitap['kategori']); ?></p>
                                 <?php endif; ?>
+                                
+                                <?php if ($kitap['durum'] == 'Ödünç' && !empty($kitap['odunc_tarihi'])): ?>
+                                    <p><strong>Ödünç Tarihi:</strong> <?php echo date('d.m.Y', strtotime($kitap['odunc_tarihi'])); ?></p>
+                                <?php endif; ?>
+                                
+                                <?php if ($kitap['durum'] == 'Ödünç' && !empty($kitap['son_teslim_tarihi'])): ?>
+                                    <p><strong>Son Teslim:</strong> <?php echo date('d.m.Y', strtotime($kitap['son_teslim_tarihi'])); ?></p>
+                                <?php endif; ?>
+                                
                                 <p><strong>Eklenme:</strong> <?php echo date('d.m.Y', strtotime($kitap['eklenme_tarihi'])); ?></p>
                             </div>
                             <div class="book-actions">
