@@ -1,0 +1,642 @@
+/* Reset ve temel stiller */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header */
+header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+header h1 {
+    color: #4a5568;
+    margin-bottom: 15px;
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #718096;
+    padding: 10px 20px;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+nav a:hover, nav a.active {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+/* Arama bölümü */
+.search-section {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.search-form {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.search-form input,
+.search-form select {
+    padding: 12px 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 25px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.search-form input:focus,
+.search-form select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.search-form input {
+    flex: 1;
+    min-width: 250px;
+}
+
+.search-form select {
+    min-width: 150px;
+}
+
+.search-form button {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.search-form button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.clear-btn {
+    text-decoration: none;
+    color: #718096;
+    padding: 12px 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.clear-btn:hover {
+    background: #f7fafc;
+    border-color: #cbd5e0;
+}
+
+/* İstatistik kartları */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-card h3 {
+    color: #4a5568;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.stat-card p {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #667eea;
+}
+
+/* İstatistik kartları için özel renkler */
+.stat-card[data-status="mevcut"] p {
+    color: #38a169;
+}
+
+.stat-card[data-status="odunc"] p {
+    color: #e53e3e;
+}
+
+.stat-card[data-status="kayip"] p {
+    color: #dd6b20;
+}
+
+/* Kitap kartları */
+.books-section {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.no-books {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.no-books p {
+    font-size: 1.2rem;
+    color: #718096;
+    margin-bottom: 20px;
+}
+
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
+}
+
+.book-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid #e2e8f0;
+}
+
+.book-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.book-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.book-header h3 {
+    color: #2d3748;
+    font-size: 1.3rem;
+    line-height: 1.4;
+    flex: 1;
+    margin-right: 15px;
+}
+
+.status {
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: default;
+}
+
+.status:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.status-mevcut {
+    background: linear-gradient(135deg, #48bb78, #38a169);
+    color: white;
+    box-shadow: 0 2px 8px rgba(72, 187, 120, 0.5);
+    border: 1px solid rgba(72, 187, 120, 0.6);
+}
+
+.status-ödünç {
+    background: linear-gradient(135deg, #f56565, #e53e3e);
+    color: white;
+    box-shadow: 0 2px 8px rgba(245, 101, 101, 0.5);
+    border: 2px solid #ffd700;
+}
+
+.status-kayıp {
+    background: linear-gradient(135deg, #ed8936, #dd6b20);
+    color: white;
+    box-shadow: 0 2px 8px rgba(237, 137, 54, 0.5);
+    border: 1px solid rgba(237, 137, 54, 0.6);
+}
+
+.book-info p {
+    margin-bottom: 8px;
+    color: #4a5568;
+}
+
+.book-info strong {
+    color: #2d3748;
+}
+
+.book-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.btn-edit, .btn-delete {
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    flex: 1;
+    text-align: center;
+}
+
+.btn-edit {
+    background: #4299e1;
+    color: white;
+}
+
+.btn-edit:hover {
+    background: #3182ce;
+    transform: translateY(-2px);
+}
+
+.btn-delete {
+    background: #f56565;
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #e53e3e;
+    transform: translateY(-2px);
+}
+
+/* Form stilleri */
+.form-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.form-container h2 {
+    color: #2d3748;
+    margin-bottom: 30px;
+    text-align: center;
+    font-size: 2rem;
+}
+
+.book-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-group label {
+    margin-bottom: 8px;
+    color: #2d3748;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.form-group input,
+.form-group select {
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-info {
+    background: #f7fafc;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+
+.form-info p {
+    margin-bottom: 8px;
+    color: #4a5568;
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.btn-primary, .btn-secondary {
+    padding: 12px 25px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    display: inline-block;
+    text-align: center;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+    background: #718096;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #4a5568;
+    transform: translateY(-2px);
+}
+
+/* Mesaj stilleri */
+.message {
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.message-success {
+    background: #c6f6d5;
+    color: #22543d;
+    border: 1px solid #9ae6b4;
+}
+
+.message-error {
+    background: #fed7d7;
+    color: #742a2a;
+    border: 1px solid #feb2b2;
+}
+
+/* Silme onay sayfası */
+.delete-confirmation {
+    text-align: center;
+}
+
+.warning-box {
+    background: #fed7d7;
+    color: #742a2a;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    border: 1px solid #feb2b2;
+}
+
+.warning-box h3 {
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+}
+
+.book-details {
+    background: #f7fafc;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+    text-align: left;
+    border: 1px solid #e2e8f0;
+}
+
+.book-details p {
+    margin-bottom: 10px;
+}
+
+.error-message {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.error-message p {
+    font-size: 1.2rem;
+    color: #718096;
+    margin-bottom: 20px;
+}
+
+/* Durum güncelleme sayfası */
+.status-update-info {
+    margin-bottom: 30px;
+}
+
+.info-box {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: rgb(229, 255, 0);
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+}
+
+.info-box h3 {
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.info-box p {
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+.status-form {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.status-update-section {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.status-update-section label {
+    font-weight: 600;
+    color: #2d3748;
+    min-width: 80px;
+}
+
+.status-update-section select {
+    padding: 10px 15px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    min-width: 200px;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.status-update-section select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.status-update-section button {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.status-update-section button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+/* Responsive tasarım */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    
+    header h1 {
+        font-size: 2rem;
+    }
+    
+    .search-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-form input,
+    .search-form select {
+        min-width: auto;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .books-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .book-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .book-header h3 {
+        margin-bottom: 10px;
+        margin-right: 0;
+    }
+    
+    .book-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .status-update-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .status-update-section select {
+        min-width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .stat-card {
+        padding: 20px;
+    }
+    
+    .stat-card p {
+        font-size: 1.5rem;
+    }
+}
