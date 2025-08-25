@@ -253,77 +253,81 @@ nav a:hover, nav a.active {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
 }
 
+
+
+/* YENİ RENK SİSTEMİ */
+
+/* Mevcut - Yeşil */
 .status-mevcut {
-    background: linear-gradient(135deg, #48bb78, #38a169);
+    background: linear-gradient(135deg, #22c55e, #16a34a);
     color: white;
-    box-shadow: 0 2px 8px rgba(72, 187, 120, 0.5);
-    border: 1px solid rgba(72, 187, 120, 0.6);
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.5);
+    border: 2px solid rgba(34, 197, 94, 0.6);
 }
 
-.status-ödünç {
-    background: linear-gradient(135deg, #f56565, #e53e3e);
-    color: white;
-    box-shadow: 0 2px 8px rgba(245, 101, 101, 0.5);
-    border: 2px solid #ffd700;
-}
-
+/* Kayıp - Gri */
 .status-kayıp {
-    background: linear-gradient(135deg, #ed8936, #dd6b20);
+    background: linear-gradient(135deg, #6b7280, #4b5563);
     color: white;
-    box-shadow: 0 2px 8px rgba(237, 137, 54, 0.5);
-    border: 1px solid rgba(237, 137, 54, 0.6);
+    box-shadow: 0 2px 8px rgba(107, 114, 128, 0.5);
+    border: 2px solid rgba(107, 114, 128, 0.6);
 }
 
-/* Ödünç kitaplar için tarih tabanlı renk kodlaması */
-.status-ödünç.gecmis {
-    background: linear-gradient(135deg, #e53e3e, #c53030) !important;
-    border: 2px solid #fc8181 !important;
-    box-shadow: 0 2px 8px rgba(229, 62, 62, 0.6) !important;
+/* Ödünç Gecikmiş - Kırmızı */
+.status-odunc-gecmis {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    color: white;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.6);
+    border: 2px solid rgba(220, 38, 38, 0.8);
     animation: pulse-red 2s infinite;
 }
 
-.status-ödünç.yakin {
-    background: linear-gradient(135deg, #fbb040, #ed8936) !important;
-    border: 2px solid #ffd700 !important;
-    box-shadow: 0 2px 8px rgba(251, 176, 64, 0.6) !important;
-    animation: pulse-yellow 2s infinite;
+/* Ödünç Yakın Tarih - Turuncu */
+.status-odunc-yakin {
+    background: linear-gradient(135deg, #ea580c, #c2410c);
+    color: white;
+    box-shadow: 0 2px 8px rgba(234, 88, 12, 0.6);
+    border: 2px solid rgba(234, 88, 12, 0.8);
+    animation: pulse-orange 2s infinite;
 }
 
-.status-ödünç.uzak {
-    background: linear-gradient(135deg, #38a169, #2f855a) !important;
-    border: 2px solid #68d391 !important;
-    box-shadow: 0 2px 8px rgba(56, 161, 105, 0.6) !important;
-    animation: pulse-green 2s infinite;
+/* Ödünç Güvenli - Mavi */
+.status-odunc-guvenli {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.6);
+    border: 2px solid rgba(37, 99, 235, 0.8);
+    animation: pulse-blue 2s infinite;
 }
 
-/* Animasyonlar */
+/* YENİ ANİMASYONLAR */
 @keyframes pulse-red {
     0%, 100% { 
-        box-shadow: 0 2px 8px rgba(229, 62, 62, 0.6);
+        box-shadow: 0 2px 8px rgba(220, 38, 38, 0.6);
     }
     50% { 
-        box-shadow: 0 4px 16px rgba(229, 62, 62, 0.8);
-        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(220, 38, 38, 0.8);
+        transform: translateY(-2px);
     }
 }
 
-@keyframes pulse-yellow {
+@keyframes pulse-orange {
     0%, 100% { 
-        box-shadow: 0 2px 8px rgba(251, 176, 64, 0.6);
+        box-shadow: 0 2px 8px rgba(234, 88, 12, 0.6);
     }
     50% { 
-        box-shadow: 0 4px 16px rgba(251, 176, 64, 0.8);
-        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(234, 88, 12, 0.8);
+        transform: translateY(-2px);
     }
 }
 
-@keyframes pulse-green {
+@keyframes pulse-blue {
     0%, 100% { 
-        box-shadow: 0 2px 8px rgba(56, 161, 105, 0.6);
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.6);
     }
     50% { 
-        box-shadow: 0 4px 16px rgba(56, 161, 105, 0.8);
-        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.8);
+        transform: translateY(-2px);
     }
 }
 

@@ -11,9 +11,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $yayin_yili = trim($_POST['yayin_yili']);
     $isbn = trim($_POST['isbn']);
     $kategori = trim($_POST['kategori']);
-    $durum = $_POST['durum'];
-    $odunc_tarihi = $_POST['odunc_tarihi'] ?? null;
-    $son_teslim_tarihi = $_POST['son_teslim_tarihi'] ?? null;
+    $durum = 'Mevcut'; // Yeni kitaplar her zaman mevcut olarak eklenir
+    $odunc_tarihi = null;
+    $son_teslim_tarihi = null;
     
     // Basit doğrulama
     if (empty($kitap_adi) || empty($yazar)) {
@@ -21,9 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $messageType = 'error';
     } else {
         try {
-            // Yeni kitaplar için tarihleri null yap (ödünç tarih bilgisi düzenleme sırasında girilir)
-            $odunc_tarihi = null;
-            $son_teslim_tarihi = null;
+            // Yeni kitaplar mevcut olarak eklenir, tarih bilgileri yoktur
             
             $sql = "INSERT INTO kitaplar (kitap_adi, yazar, yayin_evi, yayin_yili, isbn, kategori, durum, odunc_tarihi, son_teslim_tarihi) 
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -121,16 +119,7 @@ $kategoriler = $kategoriStmt->fetchAll(PDO::FETCH_COLUMN);
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="durum">Durum</label>
-                    <select id="durum" name="durum">
-                        <option value="Mevcut" <?php echo (isset($_POST['durum']) && $_POST['durum'] == 'Mevcut') ? 'selected' : ''; ?>>Mevcut</option>
-                        <option value="Kayıp" <?php echo (isset($_POST['durum']) && $_POST['durum'] == 'Kayıp') ? 'selected' : ''; ?>>Kayıp</option>
-                    </select>
-                    <small style="color: #718096; font-style: italic;">
-                        💡 İpucu: Kitabı ödünç vermek için önce ekleyin, sonra "Düzenle" butonunu kullanın
-                    </small>
-                </div>
+
 
                 <div class="form-actions">
                     <button type="submit" class="btn-primary">📚 Kitap Ekle</button>

@@ -115,29 +115,38 @@ $kategoriler = $kategoriStmt->fetchAll(PDO::FETCH_COLUMN);
                             <div class="book-header">
                                 <h3><?php echo htmlspecialchars($kitap['kitap_adi']); ?></h3>
                                                         <?php
-                        $durumClass = strtolower($kitap['durum']);
-                        $extraClass = '';
+                        // YENİ RENK SİSTEMİ
+                        $statusClass = '';
                         
-                        // Ödünç kitaplar için tarih kontrolü
-                        if ($kitap['durum'] == 'Ödünç' && !empty($kitap['son_teslim_tarihi'])) {
+                        if ($kitap['durum'] == 'Mevcut') {
+                            $statusClass = 'status-mevcut';
+                        } elseif ($kitap['durum'] == 'Kayıp') {
+                            $statusClass = 'status-kayıp';
+                        } elseif ($kitap['durum'] == 'Ödünç' && !empty($kitap['son_teslim_tarihi'])) {
                             $bugun = new DateTime();
                             $sonTeslim = new DateTime($kitap['son_teslim_tarihi']);
-                            $fark = $bugun->diff($sonTeslim);
-                            $gunFarki = $fark->days;
                             
                             if ($bugun > $sonTeslim) {
-                                // Teslim tarihi geçmiş - KIRMIZI
-                                $extraClass = 'gecmis';
-                            } elseif ($gunFarki <= 3) {
-                                // 3 gün veya daha az kalmış - SARI
-                                $extraClass = 'yakin';
+                                // Gecikmiş - Kırmızı
+                                $statusClass = 'status-odunc-gecmis';
                             } else {
-                                // 3 günden fazla var - YEŞİL
-                                $extraClass = 'uzak';
+                                $fark = $bugun->diff($sonTeslim);
+                                $gunFarki = $fark->days;
+                                
+                                if ($gunFarki <= 3) {
+                                    // Yakın tarih - Turuncu
+                                    $statusClass = 'status-odunc-yakin';
+                                } else {
+                                    // Güvenli - Mavi
+                                    $statusClass = 'status-odunc-guvenli';
+                                }
                             }
+                        } else {
+                            // Fallback için normal ödünç
+                            $statusClass = 'status-' . strtolower($kitap['durum']);
                         }
                         ?>
-                        <span class="status status-<?php echo $durumClass; ?> <?php echo $extraClass; ?>">
+                        <span class="status <?php echo $statusClass; ?>">
                             <?php
                             $durum_icons = [
                                 'Mevcut' => '✅ Mevcut',
@@ -146,15 +155,16 @@ $kategoriler = $kategoriStmt->fetchAll(PDO::FETCH_COLUMN);
                             ];
                             echo $durum_icons[$kitap['durum']] ?? $kitap['durum'];
                             
-                            // Ödünç kitaplar için tarih bilgisi
+                            // Ödünç kitaplar için tarih bilgisi (test sayfasından working code)
                             if ($kitap['durum'] == 'Ödünç' && !empty($kitap['son_teslim_tarihi'])) {
                                 $bugun = new DateTime();
                                 $sonTeslim = new DateTime($kitap['son_teslim_tarihi']);
-                                $fark = $bugun->diff($sonTeslim);
                                 
                                 if ($bugun > $sonTeslim) {
+                                    $fark = $bugun->diff($sonTeslim);
                                     echo ' (' . $fark->days . ' gün gecikme)';
                                 } else {
+                                    $fark = $bugun->diff($sonTeslim);
                                     echo ' (' . $fark->days . ' gün kaldı)';
                                 }
                             }

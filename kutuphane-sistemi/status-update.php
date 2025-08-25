@@ -87,24 +87,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <div class="book-header">
                                 <h3><?php echo htmlspecialchars($kitap['kitap_adi']); ?></h3>
                                 <?php
-                                $extraClass = '';
+                                // YENİ RENK SİSTEMİ
+                                $statusClass = '';
                                 
-                                // Ödünç kitaplar için tarih kontrolü
                                 if (!empty($kitap['son_teslim_tarihi'])) {
                                     $bugun = new DateTime();
                                     $sonTeslim = new DateTime($kitap['son_teslim_tarihi']);
-                                    $fark = $bugun->diff($sonTeslim);
                                     
                                     if ($bugun > $sonTeslim) {
-                                        $extraClass = 'gecmis';
-                                    } elseif ($fark->days <= 3) {
-                                        $extraClass = 'yakin';
+                                        // Gecikmiş - Kırmızı
+                                        $statusClass = 'status-odunc-gecmis';
                                     } else {
-                                        $extraClass = 'uzak';
+                                        $fark = $bugun->diff($sonTeslim);
+                                        $gunFarki = $fark->days;
+                                        
+                                        if ($gunFarki <= 3) {
+                                            // Yakın tarih - Turuncu
+                                            $statusClass = 'status-odunc-yakin';
+                                        } else {
+                                            // Güvenli - Mavi
+                                            $statusClass = 'status-odunc-guvenli';
+                                        }
                                     }
+                                } else {
+                                    // Fallback
+                                    $statusClass = 'status-ödünç';
                                 }
                                 ?>
-                                <span class="status status-ödünç <?php echo $extraClass; ?>">
+                                <span class="status <?php echo $statusClass; ?>">
                                     📤 Ödünç
                                 </span>
                             </div>
@@ -131,14 +141,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     <?php
                                     $bugun = new DateTime();
                                     $sonTeslim = new DateTime($kitap['son_teslim_tarihi']);
-                                    $fark = $bugun->diff($sonTeslim);
                                     
                                     if ($bugun > $sonTeslim) {
+                                        $fark = $bugun->diff($sonTeslim);
                                         echo '<p style="color: #e53e3e; font-weight: bold;">⚠️ ' . $fark->days . ' gün gecikme!</p>';
-                                    } elseif ($fark->days <= 3) {
-                                        echo '<p style="color: #fbb040; font-weight: bold;">⏰ ' . $fark->days . ' gün kaldı</p>';
                                     } else {
-                                        echo '<p style="color: #38a169; font-weight: bold;">✅ ' . $fark->days . ' gün kaldı</p>';
+                                        $fark = $bugun->diff($sonTeslim);
+                                        $gunFarki = $fark->days;
+                                        
+                                        if ($gunFarki <= 3) {
+                                            echo '<p style="color: #fbb040; font-weight: bold;">⏰ ' . $gunFarki . ' gün kaldı</p>';
+                                        } else {
+                                            echo '<p style="color: #38a169; font-weight: bold;">✅ ' . $gunFarki . ' gün kaldı</p>';
+                                        }
                                     }
                                     ?>
                                 <?php endif; ?>
