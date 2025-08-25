@@ -584,6 +584,21 @@ nav a:hover, nav a.active {
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
+.date-info {
+    margin-top: 15px;
+    padding: 15px;
+    background: linear-gradient(135deg, #e6fffa, #d6f5d6);
+    border-radius: 10px;
+    border-left: 4px solid #38a169;
+}
+
+.date-info p {
+    margin: 0;
+    color: #2d3748;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
 /* Durum güncelleme sayfası */
 .status-update-info {
     margin-bottom: 30px;

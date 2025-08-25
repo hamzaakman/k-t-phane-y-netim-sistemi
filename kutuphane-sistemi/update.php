@@ -37,16 +37,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $isbn = trim($_POST['isbn']);
     $kategori = trim($_POST['kategori']);
     $durum = $_POST['durum'];
+    $odunc_tarihi = $_POST['odunc_tarihi'] ?? null;
+    $son_teslim_tarihi = $_POST['son_teslim_tarihi'] ?? null;
     
     // Basit doğrulama
     if (empty($kitap_adi) || empty($yazar)) {
         $message = 'Kitap adı ve yazar alanları zorunludur!';
         $messageType = 'error';
+    } elseif ($durum == 'Ödünç' && (empty($odunc_tarihi) || empty($son_teslim_tarihi))) {
+        $message = 'Ödünç kitaplar için ödünç tarihi ve son teslim tarihi zorunludur!';
+        $messageType = 'error';
     } else {
         try {
-            $sql = "UPDATE kitaplar SET kitap_adi = ?, yazar = ?, yayin_evi = ?, yayin_yili = ?, isbn = ?, kategori = ?, durum = ? WHERE id = ?";
+            // Ödünç durumu değilse tarihleri null yap
+            if ($durum != 'Ödünç') {
+                $odunc_tarihi = null;
+                $son_teslim_tarihi = null;
+            }
+            
+            $sql = "UPDATE kitaplar SET kitap_adi = ?, yazar = ?, yayin_evi = ?, yayin_yili = ?, isbn = ?, kategori = ?, durum = ?, odunc_tarihi = ?, son_teslim_tarihi = ? WHERE id = ?";
             $stmt = $conn->prepare($sql);
-            $stmt->execute([$kitap_adi, $yazar, $yayin_evi, $yayin_yili, $isbn, $kategori, $durum, $id]);
+            $stmt->execute([$kitap_adi, $yazar, $yayin_evi, $yayin_yili, $isbn, $kategori, $durum, $odunc_tarihi, $son_teslim_tarihi, $id]);
             
             $message = 'Kitap başarıyla güncellendi!';
             $messageType = 'success';
@@ -140,11 +151,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                     <div class="form-group">
                         <label for="durum">Durum</label>
-                        <select id="durum" name="durum">
+                        <select id="durum" name="durum" onchange="toggleDateFields()">
                             <option value="Mevcut" <?php echo $kitap['durum'] == 'Mevcut' ? 'selected' : ''; ?>>Mevcut</option>
                             <option value="Ödünç" <?php echo $kitap['durum'] == 'Ödünç' ? 'selected' : ''; ?>>Ödünç</option>
                             <option value="Kayıp" <?php echo $kitap['durum'] == 'Kayıp' ? 'selected' : ''; ?>>Kayıp</option>
                         </select>
+                    </div>
+
+                    <!-- Ödünç tarihleri (sadece ödünç durumunda görünür) -->
+                    <div id="date-fields" class="date-fields" style="<?php echo ($kitap['durum'] == 'Ödünç') ? 'display: block;' : 'display: none;'; ?>">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="odunc_tarihi">Ödünç Tarihi *</label>
+                                <input type="date" id="odunc_tarihi" name="odunc_tarihi" value="<?php echo !empty($kitap['odunc_tarihi']) ? $kitap['odunc_tarihi'] : date('Y-m-d'); ?>">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="son_teslim_tarihi">Son Teslim Tarihi *</label>
+                                <input type="date" id="son_teslim_tarihi" name="son_teslim_tarihi" value="<?php echo !empty($kitap['son_teslim_tarihi']) ? $kitap['son_teslim_tarihi'] : date('Y-m-d', strtotime('+14 days')); ?>">
+                            </div>
+                        </div>
+                        
+                        <div class="date-info">
+                            <p>💡 <strong>İpucu:</strong> Kitabı ödünç verirken bu tarihleri doldurun. Varsayılan olarak bugün + 14 gün teslim tarihi ayarlanır.</p>
+                        </div>
                     </div>
 
                     <div class="form-info">
@@ -165,5 +195,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <?php endif; ?>
         </div>
     </div>
+
+    <script>
+        function toggleDateFields() {
+            const durumSelect = document.getElementById('durum');
+            const dateFields = document.getElementById('date-fields');
+            const oduncTarihi = document.getElementById('odunc_tarihi');
+            const sonTeslimTarihi = document.getElementById('son_teslim_tarihi');
+            
+            if (durumSelect.value === 'Ödünç') {
+                dateFields.style.display = 'block';
+                oduncTarihi.required = true;
+                sonTeslimTarihi.required = true;
+                
+                // Eğer tarihler boşsa varsayılan değerleri ayarla
+                if (!oduncTarihi.value) {
+                    oduncTarihi.value = new Date().toISOString().split('T')[0];
+                }
+                if (!sonTeslimTarihi.value) {
+                    const futureDate = new Date();
+                    futureDate.setDate(futureDate.getDate() + 14);
+                    sonTeslimTarihi.value = futureDate.toISOString().split('T')[0];
+                }
+            } else {
+                dateFields.style.display = 'none';
+                oduncTarihi.required = false;
+                sonTeslimTarihi.required = false;
+            }
+        }
+
+        // Sayfa yüklendiğinde durumu kontrol et
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleDateFields();
+        });
+    </script>
 </body>
 </html>

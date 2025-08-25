@@ -19,16 +19,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($kitap_adi) || empty($yazar)) {
         $message = 'Kitap adı ve yazar alanları zorunludur!';
         $messageType = 'error';
-    } elseif ($durum == 'Ödünç' && (empty($odunc_tarihi) || empty($son_teslim_tarihi))) {
-        $message = 'Ödünç kitaplar için ödünç tarihi ve son teslim tarihi zorunludur!';
-        $messageType = 'error';
     } else {
         try {
-            // Ödünç durumu değilse tarihleri null yap
-            if ($durum != 'Ödünç') {
-                $odunc_tarihi = null;
-                $son_teslim_tarihi = null;
-            }
+            // Yeni kitaplar için tarihleri null yap (ödünç tarih bilgisi düzenleme sırasında girilir)
+            $odunc_tarihi = null;
+            $son_teslim_tarihi = null;
             
             $sql = "INSERT INTO kitaplar (kitap_adi, yazar, yayin_evi, yayin_yili, isbn, kategori, durum, odunc_tarihi, son_teslim_tarihi) 
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -128,26 +123,13 @@ $kategoriler = $kategoriStmt->fetchAll(PDO::FETCH_COLUMN);
 
                 <div class="form-group">
                     <label for="durum">Durum</label>
-                    <select id="durum" name="durum" onchange="toggleDateFields()">
+                    <select id="durum" name="durum">
                         <option value="Mevcut" <?php echo (isset($_POST['durum']) && $_POST['durum'] == 'Mevcut') ? 'selected' : ''; ?>>Mevcut</option>
-                        <option value="Ödünç" <?php echo (isset($_POST['durum']) && $_POST['durum'] == 'Ödünç') ? 'selected' : ''; ?>>Ödünç</option>
                         <option value="Kayıp" <?php echo (isset($_POST['durum']) && $_POST['durum'] == 'Kayıp') ? 'selected' : ''; ?>>Kayıp</option>
                     </select>
-                </div>
-
-                <!-- Ödünç tarihleri (sadece ödünç durumunda görünür) -->
-                <div id="date-fields" class="date-fields" style="<?php echo (isset($_POST['durum']) && $_POST['durum'] == 'Ödünç') ? 'display: block;' : 'display: none;'; ?>">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="odunc_tarihi">Ödünç Tarihi *</label>
-                            <input type="date" id="odunc_tarihi" name="odunc_tarihi" value="<?php echo isset($_POST['odunc_tarihi']) ? htmlspecialchars($_POST['odunc_tarihi']) : date('Y-m-d'); ?>">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="son_teslim_tarihi">Son Teslim Tarihi *</label>
-                            <input type="date" id="son_teslim_tarihi" name="son_teslim_tarihi" value="<?php echo isset($_POST['son_teslim_tarihi']) ? htmlspecialchars($_POST['son_teslim_tarihi']) : date('Y-m-d', strtotime('+14 days')); ?>">
-                        </div>
-                    </div>
+                    <small style="color: #718096; font-style: italic;">
+                        💡 İpucu: Kitabı ödünç vermek için önce ekleyin, sonra "Düzenle" butonunu kullanın
+                    </small>
                 </div>
 
                 <div class="form-actions">
@@ -158,38 +140,6 @@ $kategoriler = $kategoriStmt->fetchAll(PDO::FETCH_COLUMN);
         </div>
     </div>
 
-    <script>
-        function toggleDateFields() {
-            const durumSelect = document.getElementById('durum');
-            const dateFields = document.getElementById('date-fields');
-            const oduncTarihi = document.getElementById('odunc_tarihi');
-            const sonTeslimTarihi = document.getElementById('son_teslim_tarihi');
-            
-            if (durumSelect.value === 'Ödünç') {
-                dateFields.style.display = 'block';
-                oduncTarihi.required = true;
-                sonTeslimTarihi.required = true;
-                
-                // Varsayılan tarih değerlerini ayarla
-                if (!oduncTarihi.value) {
-                    oduncTarihi.value = new Date().toISOString().split('T')[0];
-                }
-                if (!sonTeslimTarihi.value) {
-                    const futureDate = new Date();
-                    futureDate.setDate(futureDate.getDate() + 14);
-                    sonTeslimTarihi.value = futureDate.toISOString().split('T')[0];
-                }
-            } else {
-                dateFields.style.display = 'none';
-                oduncTarihi.required = false;
-                sonTeslimTarihi.required = false;
-            }
-        }
 
-        // Sayfa yüklendiğinde durumu kontrol et
-        document.addEventListener('DOMContentLoaded', function() {
-            toggleDateFields();
-        });
-    </script>
 </body>
 </html>
