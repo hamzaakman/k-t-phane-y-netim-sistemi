@@ -4,12 +4,26 @@ require_once 'db.php';
 $message = '';
 $messageType = '';
 
-// Sadece ödünç kitapları üye bilgileriyle birlikte getir
+// Arama parametresi
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+
+// Sadece ödünç kitapları üye bilgileriyle birlikte getir - arama filtresi ile
 $sql = "SELECT k.*, u.ad_soyad as uye_adi FROM kitaplar k 
         LEFT JOIN uyeler u ON k.odunc_verilen_uye_id = u.id 
-        WHERE k.durum = 'Ödünç' ORDER BY k.kitap_adi ASC";
+        WHERE k.durum = 'Ödünç'";
+$params = [];
+
+if (!empty($search)) {
+    $sql .= " AND (k.kitap_adi LIKE ? OR k.yazar LIKE ? OR u.ad_soyad LIKE ?)";
+    $searchParam = "%$search%";
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+}
+
+$sql .= " ORDER BY k.kitap_adi ASC";
 $stmt = $conn->prepare($sql);
-$stmt->execute();
+$stmt->execute($params);
 $odunc_kitaplar = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Durum güncelleme
@@ -29,11 +43,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $message = 'Kitap durumu başarıyla güncellendi!';
             $messageType = 'success';
             
-            // Listeyi yenile
-            $stmt = $conn->prepare("SELECT k.*, u.ad_soyad as uye_adi FROM kitaplar k 
-                                   LEFT JOIN uyeler u ON k.odunc_verilen_uye_id = u.id 
-                                   WHERE k.durum = 'Ödünç' ORDER BY k.kitap_adi ASC");
-            $stmt->execute();
+            // Listeyi yenile - arama parametresi ile
+            $refreshSql = "SELECT k.*, u.ad_soyad as uye_adi FROM kitaplar k 
+                          LEFT JOIN uyeler u ON k.odunc_verilen_uye_id = u.id 
+                          WHERE k.durum = 'Ödünç'";
+            $refreshParams = [];
+            
+            if (!empty($search)) {
+                $refreshSql .= " AND (k.kitap_adi LIKE ? OR k.yazar LIKE ? OR u.ad_soyad LIKE ?)";
+                $searchParam = "%$search%";
+                $refreshParams[] = $searchParam;
+                $refreshParams[] = $searchParam;
+                $refreshParams[] = $searchParam;
+            }
+            
+            $refreshSql .= " ORDER BY k.kitap_adi ASC";
+            $stmt = $conn->prepare($refreshSql);
+            $stmt->execute($refreshParams);
             $odunc_kitaplar = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch(PDOException $e) {
             $message = 'Güncelleme hatası: ' . $e->getMessage();
@@ -63,8 +89,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </nav>
         </header>
 
+        <div class="search-section">
+            <form method="GET" action="" class="search-form">
+                <input type="text" name="search" placeholder="Kitap adı, yazar veya üye adı ara..." value="<?php echo htmlspecialchars($search); ?>">
+                <button type="submit">🔍 Ara</button>
+                <?php if (!empty($search)): ?>
+                    <a href="status-update.php" class="btn-secondary">🔄 Temizle</a>
+                <?php endif; ?>
+            </form>
+        </div>
+
         <div class="form-container">
-            <h2>📤 Ödünç Kitaplar - Durum Güncelleme</h2>
+            <h2>📤 Ödünç Kitaplar - Durum Güncelleme
+                <?php if (!empty($search)): ?>
+                    <span style="font-size: 0.8em; color: #666;">(<?php echo count($odunc_kitaplar); ?> sonuç: "<?php echo htmlspecialchars($search); ?>")</span>
+                <?php else: ?>
+                    <span style="font-size: 0.8em; color: #666;">(<?php echo count($odunc_kitaplar); ?> kitap)</span>
+                <?php endif; ?>
+            </h2>
             
             <?php if ($message): ?>
                 <div class="message message-<?php echo $messageType; ?>">
@@ -74,8 +116,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             <?php if (empty($odunc_kitaplar)): ?>
                 <div class="no-books">
-                    <p>📚 Şu anda ödünç verilen kitap bulunmuyor.</p>
-                    <a href="index.php" class="btn-secondary">🔙 Ana Sayfaya Dön</a>
+                    <?php if (!empty($search)): ?>
+                        <p>🔍 "<?php echo htmlspecialchars($search); ?>" araması için hiç sonuç bulunamadı.</p>
+                        <a href="status-update.php" class="btn-secondary">🔄 Tüm Kitapları Göster</a>
+                    <?php else: ?>
+                        <p>📚 Şu anda ödünç verilen kitap bulunmuyor.</p>
+                        <a href="index.php" class="btn-secondary">🔙 Ana Sayfaya Dön</a>
+                    <?php endif; ?>
                 </div>
             <?php else: ?>
                 <div class="status-update-info">
@@ -83,6 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <h3>ℹ️ Bilgi</h3>
                         <p>Bu sayfada sadece <strong>ödünç verilen kitaplar</strong> listelenir.</p>
                         <p>Kitap geri alındığında <strong>"Mevcut"</strong>, kaybolduğunda <strong>"Kayıp"</strong> olarak işaretleyin.</p>
+                        <p>🔍 <strong>Arama yapabilirsiniz:</strong> Kitap adı, yazar adı veya üye adı ile arama yapın.</p>
                     </div>
                 </div>
 

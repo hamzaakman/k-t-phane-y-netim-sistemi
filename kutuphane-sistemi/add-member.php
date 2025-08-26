@@ -5,7 +5,14 @@ $message = '';
 $messageType = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $ad_soyad = trim($_POST['ad_soyad']);
+    // Otomatik büyük harf başlatma fonksiyonu
+    function ucwords_turkish($str) {
+        // Türkçe karakter desteği ile her kelimenin ilk harfini büyük yapar
+        $str = mb_convert_case($str, MB_CASE_TITLE, 'UTF-8');
+        return $str;
+    }
+    
+    $ad_soyad = ucwords_turkish(trim($_POST['ad_soyad']));
     $telefon = trim($_POST['telefon']);
     $eposta = trim($_POST['eposta']);
     $uyelik_tarihi = $_POST['uyelik_tarihi'];

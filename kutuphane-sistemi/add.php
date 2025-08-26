@@ -5,9 +5,16 @@ $message = '';
 $messageType = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $kitap_adi = trim($_POST['kitap_adi']);
-    $yazar = trim($_POST['yazar']);
-    $yayin_evi = trim($_POST['yayin_evi']);
+    // Otomatik büyük harf başlatma fonksiyonu
+    function ucwords_turkish($str) {
+        // Türkçe karakter desteği ile her kelimenin ilk harfini büyük yapar
+        $str = mb_convert_case($str, MB_CASE_TITLE, 'UTF-8');
+        return $str;
+    }
+    
+    $kitap_adi = ucwords_turkish(trim($_POST['kitap_adi']));
+    $yazar = ucwords_turkish(trim($_POST['yazar']));
+    $yayin_evi = ucwords_turkish(trim($_POST['yayin_evi']));
     $yayin_yili = trim($_POST['yayin_yili']);
     $isbn = trim($_POST['isbn']);
     $kategori = trim($_POST['kategori']);
